@@ -26,8 +26,8 @@ class Pawn extends Piece {
 
     @Override
     public boolean isMovable(int dX, int dY) {
-        if(dX==1 && dY==0 && player==Board.BLACK) return true;
-        if(dX==-1 && dY==0 && player==Board.WHITE) return true;
+        if(dX==0 && dY==1 && player==Board.BLACK) return true;
+        if(dX==0 && dY==-1 && player==Board.WHITE) return true;
         return false;
     }
 
@@ -46,7 +46,7 @@ class Pawn extends Piece {
     @Override
     public ArrayList<Direction> getMoveDirections() {
         ArrayList<Direction> ret=new ArrayList<Direction>();
-        if (this.player==Board.BLACK)ret.add(new Direction(1,0,1));
+        if (this.player==Board.BLACK)ret.add(new Direction(0,1,1));
         if (this.player==Board.WHITE)ret.add(new Direction(0,-1,1));
         return ret;
     }
@@ -55,8 +55,8 @@ class Pawn extends Piece {
     public ArrayList<Direction> getThreatDirections() {
         ArrayList<Direction> ret=new ArrayList<Direction>();
         if (this.player==Board.BLACK){
+            ret.add(new Direction(-1,1,1));
             ret.add(new Direction(1,1,1));
-            ret.add(new Direction(1,-1,1));
         }
         if (this.player==Board.WHITE){
             ret.add(new Direction(-1,-1,1));
@@ -398,6 +398,10 @@ class King extends Piece{
         ret.add(new Direction(0,-1,1));
         ret.add(new Direction(1,0,1));
         ret.add(new Direction(-1,0,1));
+        ret.add(new Direction(-1,1,1));
+        ret.add(new Direction(-1,-1,1));
+        ret.add(new Direction(1,1,1));
+        ret.add(new Direction(1,-1,1));
         return ret;
     }
 

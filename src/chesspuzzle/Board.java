@@ -225,6 +225,10 @@ public class Board {
         return board[x][y].toString();
     }
 
+    boolean blackCheck() {
+        return blackCheck;
+    }
+
     public Board(int size) {
         occupiedTiles = new ArrayList<>();
         this.size = size;
@@ -252,6 +256,10 @@ public class Board {
         updateBoard();
     }
 
+    public boolean isWonByWhite() {
+        return (this.getSuccessors(BLACK).isEmpty() && blackCheck);
+    }
+
     public Board() {
         this(8);
     }
@@ -261,7 +269,7 @@ public class Board {
         for (Tile current : occupiedTiles) {
             ret.addPiece(current.getPiece(), current.getX(), current.getY());
         }
-        ret.selected=this.selected;
+        ret.selected = this.selected;
         return ret;
     }
 
@@ -324,6 +332,9 @@ public class Board {
                             //we add threat
 
                             board[x][y].addThreat(piece);
+                            if (board[x][y].getPiece() != null) {
+                                board[x][y].addPossibleVisitor(current);
+                            }
                             //if we stumble upon a piece and the current one is not skipper
                             if (board[x][y].getPiece() != null && !piece.getSkips()) {
                                 //we can't move past the tile we stumbled upon
@@ -332,6 +343,7 @@ public class Board {
                                 if (board[x][y].getPiece().getColor() == piece.getColor()) {
                                     //we can't threaten it
                                     board[x][y].removeThreat(piece);
+                                    board[x][y].removePossibleVisitor(current);
                                 }
                             }
 
@@ -389,16 +401,16 @@ public class Board {
             if (what.getColor() == WHITE && whiteKing == null) {
                 if (board[x][y].getPiece() == null) {
                     whiteKing = board[x][y];
+                    board[x][y].placePiece(what);
+                    occupiedTiles.add(board[x][y]);
                 }
-                board[x][y].placePiece(what);
-                occupiedTiles.add(board[x][y]);
             }
             if (what.getColor() == BLACK && blackKing == null) {
                 if (board[x][y].getPiece() == null) {
                     blackKing = board[x][y];
+                    board[x][y].placePiece(what);
+                    occupiedTiles.add(board[x][y]);
                 }
-                board[x][y].placePiece(what);
-                occupiedTiles.add(board[x][y]);
             }
         } else if (board[x][y].getPiece() == null) {
             board[x][y].placePiece(what);
@@ -406,7 +418,9 @@ public class Board {
         }
         updateBoard();
     }
-
+    public boolean hasBothKings(){
+        return (blackKing!=null && whiteKing!=null);
+    }
     public boolean canMove(int x, int y) {
         if (selected.getPiece() == null) {
             return false;
@@ -474,7 +488,7 @@ public class Board {
 
     public void select(int x, int y) {
         selected = board[x][y];
-       // System.out.println(selected+selected.getPossibleVisitors().toString() );
+        // System.out.println(selected+selected.getPossibleVisitors().toString() );
 
     }
 
@@ -488,7 +502,7 @@ public class Board {
 
     public ArrayList<Board> getSuccessors(int Player) {
         ArrayList<Board> ret = new ArrayList();
-
+        //System.out.println(blackKing.isThreatened());
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 Tile current = board[i][j];
